@@ -6,3 +6,5 @@ Options:
 
 "Set album image as beatmap background" - If checked, sets the album image as the beatmap's background. This makes songs files much bigger.
 Thanks to @RaidMax for the code snippet.
+
+NOTE: This program adds EVERY background as album cover. some programs can only view the first album cover, so if the cover isn't the background you expected, that's the reason.
