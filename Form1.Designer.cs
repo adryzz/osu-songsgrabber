@@ -140,9 +140,9 @@
             this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox2.Location = new System.Drawing.Point(12, 120);
             this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(343, 17);
+            this.checkBox2.Size = new System.Drawing.Size(365, 17);
             this.checkBox2.TabIndex = 10;
-            this.checkBox2.Text = "Set album image as beatmap background (VERY storage intensive)";
+            this.checkBox2.Text = "Set album image(s) as beatmap background(s) (VERY storage intensive)";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // Form1

@@ -186,15 +186,15 @@ namespace osu_songsgrabber
                             {
                                 if (v.Tag.Pictures == null)
                                 {
-                                    v.Tag.Pictures = new TagLib.IPicture[] { CopyImage(Directory.GetParent(s.File).FullName) };
+                                    v.Tag.Pictures = CopyImages(Directory.GetParent(s.File).FullName, null);
                                 }
                                 else if (v.Tag.Pictures.Length < 1)
                                 {
-                                    v.Tag.Pictures = new TagLib.IPicture[] { CopyImage(Directory.GetParent(s.File).FullName) };
+                                    v.Tag.Pictures = CopyImages(Directory.GetParent(s.File).FullName, null);
                                 }
                                 else
                                 {
-                                    v.Tag.Pictures = new TagLib.IPicture[] { v.Tag.Pictures[0], CopyImage(Directory.GetParent(s.File).FullName) };
+                                    v.Tag.Pictures = CopyImages(Directory.GetParent(s.File).FullName, (TagLib.Picture)v.Tag.Pictures[0]);
                                 }
                             }
                             catch
@@ -247,28 +247,44 @@ namespace osu_songsgrabber
         }
 
 
-        TagLib.Picture CopyImage(string beatmapPath)
+        TagLib.Picture[] CopyImages(string beatmapPath, TagLib.Picture existing)
         {
-            //get all jpg images
-            string[] fs = Directory.GetFiles(beatmapPath, "*.jpg");
-            FileInfo[] files = new FileInfo[fs.Length];
+            //code modified from https://github.com/RaidMax/osu-replace
+            //thanks for the regex i am smol brain
+            string[] beatmapFiles = Directory.GetFiles(beatmapPath, "*.osu");
+            string regexString = "0,0,\".+\\..+\".*";
+            List<string> paths = new List<string>();
+            List<TagLib.Picture> pics = new List<TagLib.Picture>();
 
-            for(int i = 0; i < files.Length; i++)
+            if (existing != null)
             {
-                files[i] = new FileInfo(fs[i]);
+                pics.Add(existing);
             }
-            //find the biggest one (the background)
-            FileInfo info = files[0];
-            for (int i = 0; i < files.Length; i++)
+
+            foreach (string beatmap in beatmapFiles)
             {
-                if (files[i].Length > info.Length)
-                    info = files[i];
+                string[] beatmapFile = File.ReadAllLines(beatmap);
+
+                foreach (string line in beatmapFile)
+                {
+                    var match = Regex.Match(line, regexString);
+                    if (match.Success)
+                    {
+                        string imagePath = Regex.Match(match.Value, "\".+\\..+\"").Value;
+                        imagePath = $"{beatmapPath}{Path.DirectorySeparatorChar}{imagePath.Substring(1, imagePath.Length - 2)}";
+                        paths.Add(imagePath);
+                    }
+                }
             }
-            TagLib.Picture pic = new TagLib.Picture(info.FullName);
-            return pic;
+
+            foreach(string s in paths)
+            {
+                pics.Add(new TagLib.Picture(s));
+            }
+            return pics.ToArray();
         }
 
-        delegate void SetStuff();
+                    delegate void SetStuff();
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
